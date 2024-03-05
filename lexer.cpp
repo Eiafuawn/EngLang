@@ -14,9 +14,10 @@ enum Token {
   // primary
   tok_identifier = -6,
   tok_number = -7,
+  tok_string = -8,
 
   // errors
-  tok_error = -8
+  tok_error = -9
 };
 
 class Lexer {
@@ -30,8 +31,11 @@ public:
     if (isalpha(LastChar))
       return tokenizeIdentifier();
 
-    if (isdigit(LastChar) || LastChar == '.')
+    if (isdigit(LastChar))
       return tokenizeNumber();
+
+    if (LastChar == '"' || LastChar == '\'')
+      return tokenizeString();
 
     if (LastChar == '#') {
       skipComment();
@@ -69,6 +73,17 @@ private:
     return tok_identifier;
   }
 
+  Token tokenizeString() {
+    std::string Str;
+    LastChar = getchar();
+    do {
+      Str += LastChar;
+      LastChar = getchar();
+    } while (LastChar != '"' && LastChar != '\'');
+    LastChar = getchar();
+    return tok_string;
+  }
+
   Token tokenizeNumber() {
     std::string NumStr;
     do {
@@ -85,19 +100,4 @@ private:
   }
 };
 
-static void reportError(const char *Str) {
-  fprintf(stderr, "Error: %s\n", Str);
-}
-
-int main() {
-  Lexer lexer;
-  Token tok;
-  while ((tok = lexer.getNextToken()) != tok_eof) {
-    if (tok == tok_error) {
-      reportError("Invalid token");
-      return 1;
-    }
-    printf("Token: %d\n", tok);
-  }
-  return 0;
-}
+static void reportError(const char *Str) { fprintf(stderr, "Error: %s", Str); }
