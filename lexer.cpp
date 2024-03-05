@@ -8,13 +8,15 @@ enum Token {
   // commands
   tok_fn = -2,
   tok_end = -3,
+  tok_if = -4,
+  tok_do = -5,
 
   // primary
-  tok_identifier = -4,
-  tok_number = -5,
+  tok_identifier = -6,
+  tok_number = -7,
 
   // errors
-  tok_error = -6
+  tok_error = -8
 };
 
 class Lexer {
@@ -59,6 +61,10 @@ private:
       return tok_fn;
     if (IdentifierStr == "end")
       return tok_end;
+    if (IdentifierStr == "if")
+      return tok_if;
+    if (IdentifierStr == "do")
+      return tok_do;
 
     return tok_identifier;
   }
