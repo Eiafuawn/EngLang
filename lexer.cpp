@@ -1,80 +1,92 @@
 #include <cctype>
 #include <cstdio>
-#include <cstdlib>
 #include <string>
 
-/* Keywords:
- *  - fn: function
- *  - if, do, else, elseif: conditional
- *  - let: variable
- *  - end: to end blocks (loop, if, etc followed by keyword)
- */
 enum Token {
-  tok_eof = -1,
-
-  // commands
-  tok_fn = -2,
-  tok_end = -3,
-
-  // primary
-  tok_identifier = -4,
-  tok_number = -5,
-
-  // error
-  tok_error = -6
+    tok_eof = -1,
+    tok_fn = -2,
+    tok_end = -3,
+    tok_identifier = -4,
+    tok_number = -5,
+    tok_error = -6
 };
 
-static std::string IdentifierStr; // Filled in if tok_identifier
-static double NumVal;
+class Lexer {
+public:
+    Lexer() : LastChar(' ') {}
 
-static int gettok() {
-  static int LastChar = ' ';
+    Token getNextToken() {
+        while (isspace(LastChar))
+            LastChar = getchar();
 
-  // Skip any whitespace.
-  while (isspace(LastChar))
-    LastChar = getchar();
+        if (isalpha(LastChar))
+            return tokenizeIdentifier();
 
-  if (isalpha(LastChar)) { // identifier: [a-zA-Z][a-zA-Z0-9]*
-    IdentifierStr = LastChar;
-    while (isalnum((LastChar = getchar())))
-      IdentifierStr += LastChar;
+        if (isdigit(LastChar) || LastChar == '.')
+            return tokenizeNumber();
 
-    if (IdentifierStr == "fn")
-      return tok_fn;
-  }
+        if (LastChar == '#') {
+            skipComment();
+            return getNextToken();
+        }
 
-  // Get int and floats as numbers
-  if (isdigit(LastChar) || LastChar == '.') { // Number: [0-9.]+
-    std::string NumStr;
-    do {
-      NumStr += LastChar;
-      LastChar = getchar();
-    } while (isdigit(LastChar) || LastChar == '.');
+        if (LastChar == EOF)
+            return tok_eof;
 
-    NumVal = strtod(NumStr.c_str(), nullptr);
-    return tok_number;
-  }
+        // Return single character token
+        int ThisChar = LastChar;
+        LastChar = getchar();
+        return static_cast<Token>(ThisChar);
+    }
 
-  // Comment until end of line.
-  if (LastChar == '#') {
-    do
-      LastChar = getchar();
-    while (LastChar != EOF && LastChar != '\n' && LastChar != '\r');
+private:
+    char LastChar;
 
-    if (LastChar != EOF)
-      return gettok();
-  }
+    Token tokenizeIdentifier() {
+        std::string IdentifierStr;
+        do {
+            IdentifierStr += LastChar;
+            LastChar = getchar();
+        } while (isalnum(LastChar));
 
-  // Check for end of file. Don't eat the EOF.
-  if (LastChar == EOF)
-    return tok_eof;
-  
-  // else just return the current char
-  int ThisChar = LastChar;
-  LastChar = getchar();
-  return ThisChar;
+        if (IdentifierStr == "fn")
+            return tok_fn;
+        if (IdentifierStr == "end")
+            return tok_end;
+
+        return tok_identifier;
+    }
+
+    Token tokenizeNumber() {
+        std::string NumStr;
+        do {
+            NumStr += LastChar;
+            LastChar = getchar();
+        } while (isdigit(LastChar) || LastChar == '.');
+
+        return tok_number;
+    }
+
+    void skipComment() {
+        while (LastChar != EOF && LastChar != '\n' && LastChar != '\r')
+            LastChar = getchar();
+    }
+};
+
+static void reportError(const char* Str) {
+    fprintf(stderr, "Error: %s\n", Str);
 }
 
-static void reportError(const char *Str) {
-  fprintf(stderr, "Error: %s\n", Str);
+int main() {
+    Lexer lexer;
+    Token tok;
+    while ((tok = lexer.getNextToken()) != tok_eof) {
+        if (tok == tok_error) {
+            reportError("Invalid token");
+            return 1;
+        }
+        printf("Token: %d\n", tok);
+    }
+    return 0;
 }
+
