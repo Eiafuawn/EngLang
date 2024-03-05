@@ -17,11 +17,11 @@ enum Token {
   tok_end = -3,
 
   // primary
-  // tok_identifier = -4,
-  tok_string = -4,
+  tok_identifier = -4,
   tok_number = -5,
-  // tok_string = -6,
-  tok_error = -7
+
+  // error
+  tok_error = -6
 };
 
 static std::string IdentifierStr; // Filled in if tok_identifier
@@ -41,41 +41,6 @@ static int gettok() {
 
     if (IdentifierStr == "fn")
       return tok_fn;
-  }
-  // Handle string literals
-  if (LastChar == '"' || LastChar == '\'') {
-    char quoteChar = LastChar;
-    std::string Str;
-    while (true) {
-      LastChar = getchar();
-      if (LastChar == EOF || LastChar == '\n' || LastChar == '\r') {
-        // Unterminated string literal
-        reportError("Unterminated string literal");
-        return tok_error;
-      }
-      if (LastChar == '\\') { // Handle escape sequences
-        LastChar = getchar();
-        switch (LastChar) {
-        case 'n':
-          Str += '\n';
-          break;
-        case 't':
-          Str += '\t';
-          break;
-        // Add more escape sequences as needed
-        default:
-          Str += LastChar;
-          break;
-        }
-      } else if (LastChar == quoteChar) {
-        LastChar = getchar();
-        break; // End of string literal
-      } else {
-        Str += LastChar;
-      }
-    }
-    StringVal = Str;
-    return tok_string;
   }
 
   // Get int and floats as numbers
@@ -100,9 +65,11 @@ static int gettok() {
       return gettok();
   }
 
+  // Check for end of file. Don't eat the EOF.
   if (LastChar == EOF)
     return tok_eof;
-
+  
+  // else just return the current char
   int ThisChar = LastChar;
   LastChar = getchar();
   return ThisChar;
