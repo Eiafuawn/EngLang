@@ -23,11 +23,11 @@ enum Token {
 class Lexer {
 public:
   Lexer() : LastChar(' ') {}
-  static std::string IdentifierStr;
-  static double NumVal;
-  static std::string StrVal;
+  std::string IdentifierStr;
+  double NumVal;
+  std::string StrVal;
 
-  Token getNextToken() {
+  Token getTok() {
     while (isspace(LastChar))
       LastChar = getchar();
 
@@ -42,7 +42,7 @@ public:
 
     if (LastChar == '#') {
       skipComment();
-      return getNextToken();
+      return getTok();
     }
 
     if (LastChar == EOF)
