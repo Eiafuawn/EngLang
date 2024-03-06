@@ -16,8 +16,9 @@ enum Token {
   tok_number = -7,
   tok_string = -8,
 
+  tok_import = -9,
   // errors
-  tok_error = -9
+  tok_error = -10
 };
 
 class Lexer {
