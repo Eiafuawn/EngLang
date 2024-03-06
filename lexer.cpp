@@ -23,6 +23,9 @@ enum Token {
 class Lexer {
 public:
   Lexer() : LastChar(' ') {}
+  static std::string IdentifierStr;
+  static double NumVal;
+  static std::string StrVal;
 
   Token getNextToken() {
     while (isspace(LastChar))
@@ -55,7 +58,6 @@ private:
   char LastChar;
 
   Token tokenizeIdentifier() {
-    std::string IdentifierStr;
     do {
       IdentifierStr += LastChar;
       LastChar = getchar();
@@ -74,10 +76,9 @@ private:
   }
 
   Token tokenizeString() {
-    std::string Str;
     LastChar = getchar();
     do {
-      Str += LastChar;
+      StrVal += LastChar;
       LastChar = getchar();
     } while (LastChar != '"' && LastChar != '\'');
     LastChar = getchar();
@@ -90,6 +91,7 @@ private:
       NumStr += LastChar;
       LastChar = getchar();
     } while (isdigit(LastChar) || LastChar == '.');
+    NumVal = strtod(NumStr.c_str(), nullptr);
 
     return tok_number;
   }
