@@ -20,9 +20,14 @@ std::unique_ptr<PrototypeAst> LogErrorP(const char *Str) {
   return nullptr;
 }
 
-
 std::unique_ptr<ExprAst> ParseNumberExpr() {
   auto Result = std::make_unique<NumberExprAst>(NumVal);
+  getNextToken();
+  return std::move(Result);
+}
+
+std::unique_ptr<ExprAst> ParseStringExpr() {
+  auto Result = std::make_unique<StringExprAst>(StrVal);
   getNextToken();
   return std::move(Result);
 }
@@ -94,7 +99,7 @@ int GetTokPrecedence() {
 }
 
 std::unique_ptr<ExprAst> ParseBinOpRHS(int ExprPrec,
-                                              std::unique_ptr<ExprAst> LHS) {
+                                       std::unique_ptr<ExprAst> LHS) {
   while (1) {
     int TokPrec = GetTokPrecedence();
 

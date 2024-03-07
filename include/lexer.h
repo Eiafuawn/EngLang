@@ -12,16 +12,17 @@ enum Token {
   tok_fn = -2,
   tok_end = -3,
   tok_if = -4,
-  tok_do = -5,
+  tok_loop = -5,
+  tok_do = -6,
 
   // primary
-  tok_identifier = -6,
-  tok_number = -7,
-  tok_string = -8,
+  tok_identifier = -7,
+  tok_number = -8,
+  tok_string = -9,
 
-  tok_import = -9,
+  tok_import = -10,
   // errors
-  tok_error = -10
+  tok_error = -11
 };
 
 extern int getTok();
