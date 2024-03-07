@@ -24,7 +24,7 @@ enum Token {
   tok_error = -10
 };
 
-Token getTok();
+extern int getTok();
 extern std::string IdentifierStr;
 extern double NumVal;
 extern std::string StrVal;
