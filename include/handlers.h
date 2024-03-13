@@ -5,6 +5,8 @@
 #include "lexer.h"
 
 extern void HandleDefinition();
+extern void HandleNumber();
+extern void HandleString();
 extern void HandleImport();
 extern void HandleTopLevelExpr();
 extern void MainLoop();

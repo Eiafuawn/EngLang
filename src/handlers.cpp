@@ -9,6 +9,24 @@ void HandleDefinition() {
   }
 }
 
+void HandleNumber() {
+  if (ParseNumberExpr()) {
+    fprintf(stderr, "Parsed a number\n");
+  }
+  else {
+    getTok();
+  }
+}
+
+void HandleString() {
+  if (ParseStringExpr()) {
+    fprintf(stderr, "Parsed a string\n");
+  }
+  else {
+    getTok();
+  }
+}
+
 void HandleImport() {
   if (ParseImport()) {
     fprintf(stderr, "Parsed an import\n");
