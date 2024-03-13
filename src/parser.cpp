@@ -83,6 +83,8 @@ std::unique_ptr<ExprAst> ParsePrimary() {
     return ParseIdentifierExpr();
   case tok_number:
     return ParseNumberExpr();
+  case tok_string:
+    return ParseStringExpr();
   case '(':
     return ParseParenExpr();
   }

@@ -34,27 +34,12 @@ int getTok() {
 
   // Number: [0-9.]+
   if (isdigit(LastChar) || LastChar == '.') {
-    std::string NumStr;
-    do {
-      NumStr += LastChar;
-      LastChar = getchar();
-    } while (isdigit(LastChar) || LastChar == '.');
-
-    NumVal = strtod(NumStr.c_str(), nullptr);
-    return tok_number;
+    return getNumberToken(LastChar);
   }
 
   // String: ".*" or '.*'
   if (LastChar == '"' || LastChar == '\'') {
-    char quoteChar = LastChar;
-    LastChar = getchar(); // Consume the opening quote
-    do {
-      StrVal += LastChar;
-      LastChar = getchar();
-    } while (LastChar != EOF && LastChar != quoteChar);
-
-    LastChar = getchar(); // Consume the closing quote
-    return tok_string;
+    return getStringToken(LastChar);
   }
 
   // Comment: #.*
@@ -77,3 +62,30 @@ int getTok() {
 }
 
 static void reportError(const char *Str) { fprintf(stderr, "Error: %s", Str); }
+
+Token getStringToken(int LastChar) {
+  StrVal = "";
+  if (LastChar == '"') {
+    while ((LastChar = getchar()) != EOF && LastChar != '"') {
+      StrVal += LastChar;
+    }
+    if (LastChar == EOF) {
+      reportError("Unterminated string");
+      return tok_error;
+    }
+    return tok_string;
+  }
+  reportError("Expected string");
+  return tok_error;
+}
+
+Token getNumberToken(int LastChar) {
+  std::string NumStr;
+  do {
+    NumStr += LastChar;
+    LastChar = getchar();
+  } while (isdigit(LastChar) || LastChar == '.');
+
+  NumVal = strtod(NumStr.c_str(), nullptr);
+  return tok_number;
+}

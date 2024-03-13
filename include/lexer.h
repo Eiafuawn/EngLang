@@ -26,6 +26,8 @@ enum Token {
 };
 
 extern int getTok();
+extern Token getStringToken(int LastChar);
+extern Token getNumberToken(int LastChar);
 extern std::string IdentifierStr;
 extern double NumVal;
 extern std::string StrVal;
