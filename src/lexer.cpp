@@ -48,10 +48,10 @@ int getTok() {
   if (LastChar == '"' || LastChar == '\'') {
     char quoteChar = LastChar;
     LastChar = getchar(); // Consume the opening quote
-    while (LastChar != EOF && LastChar != quoteChar) {
+    do {
       StrVal += LastChar;
       LastChar = getchar();
-    }
+    } while (LastChar != EOF && LastChar != quoteChar);
 
     LastChar = getchar(); // Consume the closing quote
     return tok_string;
